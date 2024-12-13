@@ -6,36 +6,55 @@
     <title>Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"
+          integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
 </head>
 <body class="flex flex-col min-h-screen py-4 px-20">
 <!-- Content -->
 <main>
     <h1 class="text-3xl text-blue-500 border-b-2 border-brown-500 pb-4 mb-4">IT CERTIFICATE MANAGEMENT</h1>
     <section>
-        <form action="" class="flex flex-wrap w-full justify-between mb-4">
+        <div class="messages mb-4">
+            <p th:if="${error}" th:text="${error}" class="text-red-500"></p>
+            <p th:if="${success}" th:text="${success}" class="text-green-500"></p>
+        </div>
+        <form th:action="@{/certificates/save}" class="flex flex-wrap w-full justify-between mb-4"
+              th:object="${certificate}" method="post">
             <div class="form-group w-[48%] mb-2">
                 <label for="id" class="block font-bold">Certification Id <span class="text-red-500">*</span></label>
-                <input type="text" name="id" id="id" class="form-control w-full p-2 border border-gray-300 rounded" placeholder="Enter ID" required>
+                <input type="text" name="id" id="id" class="form-control w-full p-2 border border-gray-300 rounded"
+                       placeholder="Enter ID">
+                                <span th:if="${#fields.hasErrors('id')}" th:errors="*{id}" class="text-red-500"></span>
             </div>
             <div class="form-group w-[48%] mb-2">
                 <label for="cost" class="block font-bold">Cost <span class="text-red-500">*</span></label>
-                <input type="number" name="cost" id="cost" class="form-control w-full p-2 border border-gray-300 rounded" placeholder="Enter Cost" required>
+                <input type="number" name="cost" id="cost"
+                       class="form-control w-full p-2 border border-gray-300 rounded" placeholder="Enter Cost">
+                <span th:if="${#fields.hasErrors('cost')}" th:errors="*{cost}" class="text-red-500"></span>
             </div>
-            <div class="form-group w-[48%] mb-2" >
+            <div class="form-group w-[48%] mb-2">
                 <label for="name" class="block font-bold">Certification Name <span class="text-red-500">*</span></label>
-                <input type="text" name="name" id="name" class="form-control w-full p-2 border border-gray-300 rounded" placeholder="Enter Name" required>
+                <input type="text" name="name" id="name" class="form-control w-full p-2 border border-gray-300 rounded"
+                       placeholder="Enter Name">
+                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-red-500"></span>
             </div>
             <div class="form-group w-[48%] mb-2">
                 <label for="category" class="block font-bold">Category <span class="text-red-500">*</span></label>
                 <select name="category" id="category" class="border border-gray-300 rounded p-2 w-full">
-                    <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+                    <option th:each="category : ${categories}" th:value="${category.id}"
+                            th:text="${category.name}"></option>
                 </select>
             </div>
             <div class="form-action ml-auto">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save</button>
-                <button type="reset" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Reset</button>
-                <button type="button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Classify</button>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Save
+                </button>
+                <button type="reset" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Reset
+                </button>
+                <button type="button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Classify
+                </button>
             </div>
         </form>
     </section>
@@ -57,8 +76,8 @@
                 <td class="border border-gray-200 p-2" th:text="${cert.cost}"></td>
                 <td class="border border-gray-200 p-2" th:text="${cert.category.name}"></td>
                 <td class="border border-gray-200 p-2 text-center">
-                    <a th:href="@{/certificates/edit/{id}(id=${cert.id})}" class="text-blue-500"><i class="fa-solid fa-pen-to-square"></i></a>
-                    <a th:href="@{/certificates/delete/{id}(id=${cert.id})}" class="text-red-500"><i class="fa-solid fa-trash-can"></i></a>
+                    <a th:href="@{/certificates/delete/{id}(id=${cert.id})}" class="text-red-500"><i
+                            class="fa-solid fa-trash-can"></i></a>
                 </td>
             </tr>
             </tbody>
