@@ -47,21 +47,34 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public Certificate update(Certificate certificate) {
-        // check if certificate is null
+        // Check if certificate is null
         if (certificate == null) {
             throw new IllegalArgumentException("Certificate cannot be null");
         }
-        //check if certificate name already exists with other id
-        if (certificateRepository.findByName(certificate.getName()) != null) {
+
+        // Check if certificate name already exists with a different ID
+        var certificateByName = certificateRepository.findByName(certificate.getName());
+        if (certificateByName != null && !certificate.getId().equals(certificateByName.getId())) {
             throw new IllegalArgumentException("Certificate with name " + certificate.getName() + " already exists");
         }
 
-        // check if category valid
+        // Validate category
+        if (certificate.getCategory() == null) {
+            throw new IllegalArgumentException("Certificate category is invalid");
+        }
         if (categoryService.findById(certificate.getCategory().getId()) == null) {
             throw new IllegalArgumentException("Category with id " + certificate.getCategory().getId() + " not found");
         }
+
+        // Ensure certificate exists before updating
+        if (!certificateRepository.existsById(certificate.getId())) {
+            throw new IllegalArgumentException("Certificate with id " + certificate.getId() + " does not exist");
+        }
+
+        // Save and return the updated certificate
         return certificateRepository.save(certificate);
     }
+
 
     @Override
     public boolean delete(String id) {

@@ -17,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = {"category"})
 public class Certificate {
     @Id
     @NotBlank(message = "Certificate ID is required")
