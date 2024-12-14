@@ -50,12 +50,8 @@ public class CertificateServiceImpl implements CertificateService {
         if (certificate == null) {
             throw new IllegalArgumentException("Certificate cannot be null");
         }
-        // check if certificate already exists
-        if (certificateRepository.findByName(certificate.getName()) == null) {
-            throw new IllegalArgumentException("Certificate with name " + certificate.getName() + " not found");
-        }
         //check if certificate name already exists with other id
-        if (!certificateRepository.findByName(certificate.getName()).getId().equals(certificate.getId())) {
+        if (certificateRepository.findByName(certificate.getName()) != null) {
             throw new IllegalArgumentException("Certificate with name " + certificate.getName() + " already exists");
         }
 

@@ -19,40 +19,45 @@
             <p th:if="${error}" th:text="${error}" class="text-red-500"></p>
             <p th:if="${success}" th:text="${success}" class="text-green-500"></p>
         </div>
-        <form th:action="@{/certificates/save}" class="flex flex-wrap w-full justify-between mb-4"
+        <form th:action="@{${certificate.id != null} ? '/certificates/update' : '/certificates/save'}"
+              class="flex flex-wrap w-full justify-between mb-4"
               th:object="${certificate}" method="post">
-            <div class="form-group w-[48%] mb-2">
+        <div class="form-group w-[48%] mb-2">
                 <label for="id" class="block font-bold">Certification Id <span class="text-red-500">*</span></label>
                 <input type="text" name="id" id="id" class="form-control w-full p-2 border border-gray-300 rounded"
-                       placeholder="Enter ID">
-                                <span th:if="${#fields.hasErrors('id')}" th:errors="*{id}" class="text-red-500"></span>
+                       th:classappend="${certificate.id != null} ? 'bg-gray-200 cursor-not-allowed focus:ring-0 focus:outline-none' : ''"
+                       placeholder="Enter ID" th:field="*{id}" th:attr="readonly=${certificate.id != null}">
+                <span th:if="${#fields.hasErrors('id')}" th:errors="*{id}" class="text-red-500"></span>
             </div>
             <div class="form-group w-[48%] mb-2">
                 <label for="cost" class="block font-bold">Cost <span class="text-red-500">*</span></label>
-                <input type="number" name="cost" id="cost"
-                       class="form-control w-full p-2 border border-gray-300 rounded" placeholder="Enter Cost">
+                <input type="number" name="cost" id="cost" class="form-control w-full p-2 border border-gray-300 rounded" placeholder="Enter Cost" th:field="*{cost}">
                 <span th:if="${#fields.hasErrors('cost')}" th:errors="*{cost}" class="text-red-500"></span>
             </div>
             <div class="form-group w-[48%] mb-2">
                 <label for="name" class="block font-bold">Certification Name <span class="text-red-500">*</span></label>
                 <input type="text" name="name" id="name" class="form-control w-full p-2 border border-gray-300 rounded"
-                       placeholder="Enter Name">
+                       placeholder="Enter Name" th:field="*{name}">
                 <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-red-500"></span>
             </div>
             <div class="form-group w-[48%] mb-2">
                 <label for="category" class="block font-bold">Category <span class="text-red-500">*</span></label>
-                <select name="category" id="category" class="border border-gray-300 rounded p-2 w-full">
+                <select name="category" id="category" class="border border-gray-300 rounded p-2 w-full" th:field="*{category.id}">
                     <option th:each="category : ${categories}" th:value="${category.id}"
                             th:text="${category.name}"></option>
                 </select>
             </div>
             <div class="form-action ml-auto">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <button type="submit"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded hover:cursor-pointer">
                     Save
                 </button>
-                <button type="reset" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Reset
+                <button type="reset"
+                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded hover:cursor-pointer">
+                    Reset
                 </button>
-                <button type="button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                <button type="button"
+                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded hover:cursor-pointer">
                     Classify
                 </button>
             </div>
@@ -71,13 +76,16 @@
             </thead>
             <tbody>
             <tr th:each="cert : ${certificates}">
-                <td class="border border-gray-200 p-2 text-blue-500" th:text="${cert.id}"></td>
+                <td class="border border-gray-200 p-2 text-blue-500">
+                    <a th:href="@{/certificates/update/{id}(id=${cert.id})}" th:text="${cert.id}"></a>
+                </td>
                 <td class="border border-gray-200 p-2" th:text="${cert.name}"></td>
                 <td class="border border-gray-200 p-2" th:text="${cert.cost}"></td>
                 <td class="border border-gray-200 p-2" th:text="${cert.category.name}"></td>
                 <td class="border border-gray-200 p-2 text-center">
-                    <a th:href="@{/certificates/delete/{id}(id=${cert.id})}" class="text-red-500"><i
-                            class="fa-solid fa-trash-can"></i></a>
+                    <a th:href="@{/certificates/delete/{id}(id=${cert.id})}" class="text-red-500" title="Delete" onclick="return confirm('Do you want to delete this certificate?')">
+                        <i class="fas fa-trash"></i>
+                    </a>
                 </td>
             </tr>
             </tbody>

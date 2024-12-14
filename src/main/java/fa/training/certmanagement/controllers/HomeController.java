@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import fa.training.certmanagement.services.CategoryService;
 import fa.training.certmanagement.entities.Certificate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -61,6 +58,74 @@ public class HomeController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
 
+        return "redirect:/";
+    }
+
+    @GetMapping("/certificates/delete/{id}")
+    public String deleteCertificate(@PathVariable String id, RedirectAttributes redirectAttributes) {
+        boolean result = false;
+
+        try {
+            result = certificateService.delete(id);
+            redirectAttributes.addFlashAttribute("success", "Certificate with id " + id + " has been deleted successfully!");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "home/index";
+        }
+
+        if (!result) {
+            redirectAttributes.addFlashAttribute("error", "Certificate with id " + id + " not found!");
+        }
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/certificates/update/{id}")
+    public String updateCertificate(@PathVariable String id, Model model) {
+        Certificate certificate = certificateService.findById(id);
+        if (certificate == null) {
+            model.addAttribute("error", "Certificate not found!");
+            return "redirect:/";
+        }
+
+        List<Category> categories = categoryService.findAll();
+        List<Certificate> certificates = certificateService.findAll();
+
+        model.addAttribute("certificate", certificate); // Pre-fill form
+        model.addAttribute("categories", categories);
+        model.addAttribute("certificates", certificates);
+
+        return "home/index";
+    }
+
+    @PostMapping("/certificates/update")
+    public String updateCertificate(@ModelAttribute("certificate") @Valid Certificate certificate,
+                                    BindingResult bindingResult,
+                                    RedirectAttributes redirectAttributes, Model model) {
+
+        // Check for validation errors
+        if (bindingResult.hasErrors()) {
+            // Re-fetch categories and certificates for the view
+            model.addAttribute("categories", categoryService.findAll());
+            model.addAttribute("certificates", certificateService.findAll());
+
+            // Return to the home page with errors displayed
+            return "home/index";
+        }
+
+        try {
+            // Call the service layer to update the certificate
+            Certificate updatedCertificate = certificateService.update(certificate);
+
+            // Add a success message to the redirect attributes
+            redirectAttributes.addFlashAttribute("success",
+                    "Certificate " + updatedCertificate.getName() + " has been updated successfully!");
+        } catch (IllegalArgumentException e) {
+            // Handle exceptions and add an error message
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+
+        // Redirect back to the home page
         return "redirect:/";
     }
 
