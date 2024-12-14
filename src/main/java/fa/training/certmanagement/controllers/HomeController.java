@@ -15,7 +15,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class HomeController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             Model model) {
+
         populateModel(model, page, size, new Certificate());
         return "home/index";
     }
@@ -111,6 +115,14 @@ public class HomeController {
         Pageable pageable = PageRequest.of(page, size);
         List<Category> categories = categoryService.findAll();
         Page<Certificate> certificates = certificateService.findAll(pageable);
+        List<Map<String, Serializable>> classifiedCertificates = categoryService.findAll().stream()
+                .map(category -> {
+                    Map<String, Serializable> classification = new HashMap<>();
+                    classification.put("category", category.getName());
+                    classification.put("count", certificateService.countByCategoryId(category.getId()));
+                    return classification;
+                })
+                .toList();
 
         model.addAttribute("categories", categories);
         model.addAttribute("certificates", certificates.getContent());
@@ -118,5 +130,7 @@ public class HomeController {
         model.addAttribute("totalElements", certificates.getTotalElements());
         model.addAttribute("currentPage", certificates.getNumber());
         model.addAttribute("certificate", certificate);
+        model.addAttribute("classifiedCertificates", classifiedCertificates);
+
     }
 }

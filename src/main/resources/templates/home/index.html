@@ -19,14 +19,14 @@
             <p th:if="${error}" th:text="${error}" class="text-red-500"></p>
             <p th:if="${success}" th:text="${success}" class="text-green-500"></p>
         </div>
-        <form th:action="@{${certificate.id != null} ? '/certificates/update' : '/certificates/save'}"
+        <form th:action="@{${certificate.id != null && certificate.id != ''} ? '/certificates/update' : '/certificates/save'}"
               class="flex flex-wrap w-full justify-between mb-4"
               th:object="${certificate}" method="post">
         <div class="form-group w-[48%] mb-2">
                 <label for="id" class="block font-bold">Certification Id <span class="text-red-500">*</span></label>
                 <input type="text" name="id" id="id" class="form-control w-full p-2 border border-gray-300 rounded"
-                       th:classappend="${certificate.id != null} ? 'bg-gray-200 cursor-not-allowed focus:ring-0 focus:outline-none' : ''"
-                       placeholder="Enter ID" th:field="*{id}" th:attr="readonly=${certificate.id != null}">
+                       th:classappend="${certificate.id != null && certificate.id != ''} ? 'bg-gray-200 cursor-not-allowed focus:ring-0 focus:outline-none' : ''"
+                       placeholder="Enter ID" th:field="*{id}" th:attr="readonly=${certificate.id != null && certificate.id != ''}">
                 <span th:if="${#fields.hasErrors('id')}" th:errors="*{id}" class="text-red-500"></span>
             </div>
             <div class="form-group w-[48%] mb-2">
@@ -56,8 +56,7 @@
                         class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded hover:cursor-pointer">
                     Reset
                 </button>
-                <button type="button"
-                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded hover:cursor-pointer">
+                <button type="button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded hover:cursor-pointer" onclick="openModal()">
                     Classify
                 </button>
             </div>
@@ -111,13 +110,53 @@
             </div>
             <div class="page-info flex items-center space-x-3 mx-2">
                 <span>Page</span>
-                <span th:text="${currentPage + 1}"></span>
+                <span th:text="${currentPage + 1}" class="font-bold"></span>
                 <span>of</span>
-                <span th:text="${totalPages}"></span>
+                <span th:text="${totalPages}" class="font-bold"></span>
                 <span>Items</span>
             </div>
         </div>
     </section>
 </main>
+<!-- Modal -->
+<div id="classificationModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white rounded-lg w-1/2 p-6">
+        <div class="flex justify-between items-center mb-4 p-2 border-b">
+            <h2 class="text-xl font-bold">Certificate Classification</h2>
+            <i class="fas fa-times float-right cursor-pointer" onclick="closeModal()"></i>
+        </div>
+        <p class="mb-4">Total of certificates by the category</p>
+        <table class="w-full">
+            <thead>
+            <tr class="bg-blue-500 text-white">
+                <th class="p-2 border-b">#</th>
+                <th class="p-2 border-b">Category</th>
+                <th class="p-2 border-b">Count</th>
+            </tr>
+            </thead>
+            <tbody id="classificationResults">
+            <tr th:each="classification : ${classifiedCertificates}" class="text-center">
+                <td class="p-2 border-b font-bold" th:text="${classifiedCertificates.indexOf(classification) + 1}"></td>
+                <td class="p-2 border-b" th:text="${classification['category']}"></td>
+                <td class="p-2 border-b" th:text="${classification['count']}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="flex justify-end mt-4">
+            <button onclick="closeModal()" class="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Script for modal -->
+<script>
+    function openModal() {
+        document.getElementById('classificationModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('classificationModal').classList.add('hidden');
+    }
+</script>
 </body>
 </html>

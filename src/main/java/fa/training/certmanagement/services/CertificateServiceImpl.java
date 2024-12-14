@@ -92,4 +92,8 @@ public class CertificateServiceImpl implements CertificateService {
         // check if certificate deleted
         return !certificateRepository.existsById(id);
     }
+
+    public long countByCategoryId(int categoryId) {
+        return certificateRepository.countByCategoryId(categoryId);
+    }
 }

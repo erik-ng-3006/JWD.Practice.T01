@@ -45,4 +45,6 @@ public interface CertificateService {
      * @return true if the certificate was successfully deleted; false otherwise
      */
     boolean delete(String id);
+
+    long countByCategoryId(int categoryId);
 }
