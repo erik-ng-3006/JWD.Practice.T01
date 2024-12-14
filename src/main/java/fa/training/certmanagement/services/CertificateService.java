@@ -1,16 +1,17 @@
 package fa.training.certmanagement.services;
 
 import fa.training.certmanagement.entities.Certificate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface CertificateService {
     /**
-     * Retrieves a list of all certificates.
+     * Retrieves a paginated list of all Certificate objects.
      *
-     * @return a list of all certificates, represented as Certificate objects.
+     * @return a Page containing Certificate objects
      */
-    List<Certificate> findAll();
+    Page<Certificate> findAll(Pageable pageable);
 
     /**
      * Retrieves a Certificate object based on its unique identifier.

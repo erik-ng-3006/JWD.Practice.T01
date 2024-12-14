@@ -3,10 +3,11 @@ package fa.training.certmanagement.services;
 import fa.training.certmanagement.entities.Certificate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import fa.training.certmanagement.repositories.CertificateRepository;
 
-import java.util.List;
 
 @Service
 @Transactional
@@ -16,8 +17,8 @@ public class CertificateServiceImpl implements CertificateService {
     private final CategoryService categoryService;
 
     @Override
-    public List<Certificate> findAll() {
-        return certificateRepository.findAll();
+    public Page<Certificate> findAll(Pageable pageable) {
+        return certificateRepository.findAll(pageable);
     }
 
     @Override

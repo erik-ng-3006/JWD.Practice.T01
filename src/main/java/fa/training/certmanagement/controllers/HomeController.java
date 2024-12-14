@@ -4,6 +4,9 @@ import fa.training.certmanagement.entities.Category;
 import fa.training.certmanagement.services.CertificateService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,12 +25,19 @@ public class HomeController {
     private final CertificateService certificateService;
 
     @GetMapping
-    public String index(Model model) {
+    public String index(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model) {
+        Pageable pageable = PageRequest.of(page, size);
         List<Category> categories = categoryService.findAll();
-        List<Certificate> certificates = certificateService.findAll();
+        Page<Certificate> certificates = certificateService.findAll(pageable);
 
         model.addAttribute("categories", categories);
-        model.addAttribute("certificates", certificates);
+        model.addAttribute("certificates", certificates.getContent());
+        model.addAttribute("totalPages", certificates.getTotalPages());
+        model.addAttribute("totalElements", certificates.getTotalElements());
+        model.addAttribute("currentPage", certificates.getNumber());
 
         // create new certificate
         Certificate certificate = new Certificate();
@@ -43,9 +53,10 @@ public class HomeController {
                                RedirectAttributes redirectAttributes, Model model) {
 
         if (bindingResult.hasErrors()) {
+            Pageable pageable = PageRequest.of(0, 5);
             // Re-fetch categories and certificates for the view
             model.addAttribute("categories", categoryService.findAll());
-            model.addAttribute("certificates", certificateService.findAll());
+            model.addAttribute("certificates", certificateService.findAll(pageable));
 
             // Return the form with error messages
             return "home/index";
@@ -87,9 +98,10 @@ public class HomeController {
             model.addAttribute("error", "Certificate not found!");
             return "redirect:/";
         }
+        Pageable pageable = PageRequest.of(0, 5);
 
         List<Category> categories = categoryService.findAll();
-        List<Certificate> certificates = certificateService.findAll();
+        Page<Certificate> certificates = certificateService.findAll(pageable);
 
         model.addAttribute("certificate", certificate); // Pre-fill form
         model.addAttribute("categories", categories);
@@ -105,9 +117,10 @@ public class HomeController {
 
         // Check for validation errors
         if (bindingResult.hasErrors()) {
+            Pageable pageable = PageRequest.of(0, 5);
             // Re-fetch categories and certificates for the view
             model.addAttribute("categories", categoryService.findAll());
-            model.addAttribute("certificates", certificateService.findAll());
+            model.addAttribute("certificates", certificateService.findAll(pageable));
 
             // Return to the home page with errors displayed
             return "home/index";
