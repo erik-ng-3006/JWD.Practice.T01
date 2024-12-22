@@ -2,7 +2,6 @@ package fa.training.certmanagement.services;
 
 import fa.training.certmanagement.entities.Category;
 import fa.training.certmanagement.repositories.CategoryRepository;
-import fa.training.certmanagement.repositories.CertificateRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,11 +45,18 @@ public class CategoryServiceImpl implements CategoryService {
         if (category == null) {
             throw new IllegalArgumentException("Category cannot be null");
         }
+
         // check if category already exists
+        Category foundCategory = categoryRepository.findById(category.getId()).orElse(null);
+        if (foundCategory == null) {
+            throw new IllegalArgumentException("Category with id " + category.getId() + " not found");
+        }
+        // check if category name already exists with a different ID
         Category categoryByName = categoryRepository.findByName(category.getName());
-        if (categoryByName != null) {
+        if (categoryByName != null && category.getId() != categoryByName.getId()) {
             throw new IllegalArgumentException("Category with name " + category.getName() + " already exists");
         }
+
         // save category
         return categoryRepository.save(category);
     }
