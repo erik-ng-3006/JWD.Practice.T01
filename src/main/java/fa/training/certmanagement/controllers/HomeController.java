@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 @Controller
 @RequiredArgsConstructor
@@ -39,7 +40,7 @@ public class HomeController {
     }
 
     @PostMapping("/certificates/save")
-    public String saveCertificate(
+    public String saveOrUpdateCertificate(
             @ModelAttribute("certificate") @Valid Certificate certificate,
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes,
@@ -51,14 +52,24 @@ public class HomeController {
         }
 
         try {
-            Certificate result = certificateService.create(certificate);
-            redirectAttributes.addFlashAttribute("success", "Certificate " + result.getName() + " has been created successfully!");
+            if (certificate.getId() == null || certificate.getId().isEmpty()) {
+                // Create a new certificate
+                Certificate result = certificateService.create(certificate);
+                redirectAttributes.addFlashAttribute("success",
+                        "Certificate " + result.getName() + " has been created successfully!");
+            } else {
+                // Update an existing certificate
+                Certificate updatedCertificate = certificateService.update(certificate);
+                redirectAttributes.addFlashAttribute("success",
+                        "Certificate " + updatedCertificate.getName() + " has been updated successfully!");
+            }
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
 
         return "redirect:/";
     }
+
 
     @GetMapping("/certificates/delete/{id}")
     public String deleteCertificate(@PathVariable String id, RedirectAttributes redirectAttributes) {
@@ -87,34 +98,22 @@ public class HomeController {
         return "home/index";
     }
 
-    @PostMapping("/certificates/update")
-    public String updateCertificate(
-            @ModelAttribute("certificate") @Valid Certificate certificate,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes,
-            Model model) {
-
-        if (bindingResult.hasErrors()) {
-            populateModel(model, 0, 5, certificate);
-            return "home/index";
-        }
-
-        try {
-            Certificate updatedCertificate = certificateService.update(certificate);
-            redirectAttributes.addFlashAttribute("success",
-                    "Certificate " + updatedCertificate.getName() + " has been updated successfully!");
-        } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-        }
-
-        return "redirect:/";
-    }
-
     // Helper method to populate model with common attributes
     private void populateModel(Model model, int page, int size, Certificate certificate) {
+        // Pagination
         Pageable pageable = PageRequest.of(page, size);
+
+        // Get categories and certificates
         List<Category> categories = categoryService.findAll();
         Page<Certificate> certificates = certificateService.findAll(pageable);
+
+        // Calculate page numbers
+        List<Integer> pageNumbers = IntStream
+                .range(Math.max(page - 3, 0), Math.min(page + 3 + 1, certificates.getTotalPages()))
+                .boxed()
+                .toList();
+
+        // Classify
         List<Map<String, Serializable>> classifiedCertificates = categoryService.findAll().stream()
                 .map(category -> {
                     Map<String, Serializable> classification = new HashMap<>();
@@ -124,6 +123,7 @@ public class HomeController {
                 })
                 .toList();
 
+        // Set model attributes
         model.addAttribute("categories", categories);
         model.addAttribute("certificates", certificates.getContent());
         model.addAttribute("totalPages", certificates.getTotalPages());
@@ -131,6 +131,7 @@ public class HomeController {
         model.addAttribute("currentPage", certificates.getNumber());
         model.addAttribute("certificate", certificate);
         model.addAttribute("classifiedCertificates", classifiedCertificates);
+        model.addAttribute("pageNumbers", pageNumbers);
 
     }
 }
