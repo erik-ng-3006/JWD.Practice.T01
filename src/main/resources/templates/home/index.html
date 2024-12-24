@@ -25,13 +25,13 @@
               class="flex flex-wrap w-full justify-between mb-4"
               th:object="${certificate}" method="post">
 
-            <div class="form-group w-[48%] mb-2">
-                <div class="bg-white p-4 rounded-lg">
+            <div class="form-group w-[45%] mb-2">
+                <div class="bg-white py-4 rounded-lg">
                     <div class="relative bg-inherit">
                         <input type="text" name="id" id="id"
                                class="peer bg-transparent h-10 w-full rounded-lg text-gray-700 placeholder-transparent ring-2 px-2 ring-gray-300 focus:ring-sky-600 focus:outline-none focus:border-rose-600"
                                placeholder="Enter ID" th:field="*{id}"
-                               th:classappend="${certificate.id != null && certificate.id != ''} ? 'bg-gray-200 cursor-not-allowed' : ''"
+                               th:classappend="${certificate.id != null && certificate.id != ''} ? 'cursor-not-allowed' : ''"
                                th:attr="readonly=${certificate.id != null && certificate.id != ''}"/>
                         <label for="id"
                                class="absolute cursor-text left-0 -top-3 text-sm text-blue-500 bg-inherit mx-1 px-1 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-3 peer-focus:text-sky-600 peer-focus:text-sm transition-all">Certification Id *</label>
@@ -40,8 +40,8 @@
                 <span th:if="${#fields.hasErrors('id')}" th:errors="*{id}" class="text-red-500"></span>
             </div>
 
-            <div class="form-group w-[48%] mb-2">
-                <div class="bg-white p-4 rounded-lg">
+            <div class="form-group w-[45%] mb-2">
+                <div class="bg-white py-4 rounded-lg">
                     <div class="relative bg-inherit">
                         <input type="number" name="cost" id="cost"
                                class="peer bg-transparent h-10 w-full rounded-lg text-gray-700 placeholder-transparent ring-2 px-2 ring-gray-300 focus:ring-sky-600 focus:outline-none focus:border-rose-600"
@@ -53,8 +53,8 @@
                 <span th:if="${#fields.hasErrors('cost')}" th:errors="*{cost}" class="text-red-500"></span>
             </div>
 
-            <div class="form-group w-[48%] mb-2">
-                <div class="bg-white p-4 rounded-lg">
+            <div class="form-group w-[45%] mb-2">
+                <div class="bg-white py-4 rounded-lg">
                     <div class="relative bg-inherit">
                         <input type="text" name="name" id="name"
                                class="peer bg-transparent h-10 w-full rounded-lg text-gray-700 placeholder-transparent ring-2 px-2 ring-gray-300 focus:ring-sky-600 focus:outline-none focus:border-rose-600"
@@ -65,8 +65,8 @@
                 </div>
                 <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-red-500"></span>
             </div>
-            <div class="form-group w-[48%] mb-2">
-                <div class="bg-white p-4 rounded-lg">
+            <div class="form-group w-[45%] mb-2">
+                <div class="bg-white py-4 rounded-lg">
                     <div class="relative bg-inherit">
                         <select name="category" id="category"
                                 class="peer bg-transparent h-10 w-full rounded-lg text-gray-700 placeholder-transparent ring-2 px-2 ring-gray-300 focus:ring-sky-600 focus:outline-none focus:border-rose-600"
@@ -78,7 +78,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-action ml-auto m-4">
+            <div class="form-action ml-auto mb-3">
                 <button type="submit"
                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded hover:cursor-pointer hover:transform hover:scale-105 duration-300">
                     <i class="fas fa-save"></i>
